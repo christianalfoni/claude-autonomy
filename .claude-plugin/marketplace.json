@@ -1,0 +1,15 @@
+{
+  "name": "christianalfoni",
+  "owner": {
+    "name": "Christian Alfoni",
+    "email": "christianalfoni@gmail.com"
+  },
+  "description": "A self-improving agent loop for Claude Code, packaged as a plugin.",
+  "plugins": [
+    {
+      "name": "close-gaps",
+      "source": "./plugins/close-gaps",
+      "description": "At session end, a Stop hook reviews the work and captures docs, validation tools, and external-context tools as project skills — so the next run is faster."
+    }
+  ]
+}

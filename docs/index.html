@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>close-gaps — a self-improving loop for Claude Code</title>
+<meta name="description" content="At the end of a working session, Claude Code reviews the work and captures docs, validation tools, and external-context tools as project skills — so the next run is faster.">
+<style>
+  :root{
+    --bg:#0b0d10; --panel:#13161b; --line:#232830; --fg:#e7ebf0; --muted:#9aa4b2;
+    --accent:#7cc4ff; --accent2:#9b8cff; --code:#0e1116;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);line-height:1.6}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  header{padding:88px 0 40px;border-bottom:1px solid var(--line)}
+  .badge{display:inline-block;font-family:var(--mono);font-size:12px;color:var(--accent);
+    border:1px solid var(--line);border-radius:999px;padding:4px 12px;margin-bottom:24px}
+  h1{font-size:46px;line-height:1.1;margin:0 0 16px;letter-spacing:-.02em}
+  h1 .g{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lead{font-size:20px;color:var(--muted);max-width:640px;margin:0}
+  section{padding:48px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:24px;margin:0 0 8px;letter-spacing:-.01em}
+  .sub{color:var(--muted);margin:0 0 28px}
+  .cards{display:grid;gap:16px;grid-template-columns:1fr}
+  @media(min-width:680px){.cards{grid-template-columns:1fr 1fr 1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px}
+  .card h3{margin:0 0 8px;font-size:16px}
+  .card p{margin:0;color:var(--muted);font-size:14px}
+  .n{font-family:var(--mono);font-size:12px;color:var(--accent2)}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:16px 18px;
+    overflow:auto;font-family:var(--mono);font-size:14px;color:#d7e2ee}
+  .step{color:var(--muted);font-family:var(--mono);font-size:13px}
+  ol.flow{list-style:none;counter-reset:s;padding:0;margin:0;display:grid;gap:14px}
+  ol.flow li{counter-increment:s;padding-left:40px;position:relative;color:var(--muted)}
+  ol.flow li::before{content:counter(s);position:absolute;left:0;top:0;width:26px;height:26px;
+    border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;
+    font-family:var(--mono);font-size:13px;color:var(--accent)}
+  ol.flow b{color:var(--fg)}
+  footer{padding:40px 0 80px;color:var(--muted);font-size:14px;display:flex;gap:18px;flex-wrap:wrap}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <span class="badge">Claude Code plugin</span>
+    <h1>Your agent should get <span class="g">better every session</span>.</h1>
+    <p class="lead">close-gaps reviews each working session when it ends and captures
+      what would make the next run faster — as skills committed to your project.</p>
+  </header>
+
+  <section>
+    <h2>The idea</h2>
+    <p class="sub">One question, asked automatically at the end of every working session:</p>
+    <pre>What would let the next run do this — and validate it as the
+project's real user — without re-deriving it?</pre>
+    <p class="sub" style="margin-top:20px">Whatever the answer, it becomes a skill. Because a
+      skill's description is always loaded, the catalog of what your project knows and can do is
+      always present — and grows on its own.</p>
+  </section>
+
+  <section>
+    <h2>Three kinds of skill</h2>
+    <p class="sub">Written to your project's own <code>.claude/skills/</code>, never globally.</p>
+    <div class="cards">
+      <div class="card"><div class="n">01 · docs</div><h3>Knowledge</h3>
+        <p>How to use the project's libraries and conventions, indexed as a table of contents. Anchored by a self-healing <code>project-overview</code>.</p></div>
+      <div class="card"><div class="n">02 · validate</div><h3>Validation tools</h3>
+        <p>A generic CLI that drives the real interface — UI, command, endpoint, API — so a result is proven the way its user sees it. Never a proxy.</p></div>
+      <div class="card"><div class="n">03 · reach</div><h3>External context</h3>
+        <p>A generic CLI over an external system — a DB, an issue tracker, an API. The one gap that may need you: authentication.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>How it works</h2>
+    <ol class="flow">
+      <li>You finish a piece of work and the session goes to stop.</li>
+      <li>A <b>Stop hook</b> fires — once per working session, skipping trivial Q&amp;A.</li>
+      <li>It runs the <b>close-gaps review</b> over the session.</li>
+      <li>Durable findings are committed as <b>project skills</b>. Next run starts ahead.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Install</h2>
+    <p class="sub">Adds a skill and a Stop hook — no <code>settings.json</code> edits.</p>
+    <pre>/plugin marketplace add christianalfoni/close-gaps
+/plugin install close-gaps@christianalfoni</pre>
+    <p class="step"># then /clear, and work as usual</p>
+  </section>
+
+  <footer>
+    <a href="https://github.com/christianalfoni/close-gaps">GitHub</a>
+    <a href="https://github.com/christianalfoni/close-gaps/blob/main/plugins/close-gaps/skills/close-gaps/SKILL.md">The skill</a>
+    <span>MIT</span>
+  </footer>
+
+</div>
+</body>
+</html>
