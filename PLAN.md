@@ -1,6 +1,6 @@
 # PLAN — close-gaps plugin + marketplace + site
 
-Handoff for a fresh session rooted in this folder (`~/Development/claude-plugins`).
+Handoff for a fresh session rooted in this folder (`~/Development/claude-autonomy`).
 
 ## What's already scaffolded
 - Plugin: `plugins/close-gaps/` — `plugin.json`, `skills/close-gaps/SKILL.md` (copied
@@ -17,7 +17,7 @@ Handoff for a fresh session rooted in this folder (`~/Development/claude-plugins
 
 ### 1. Verify the plugin locally (before any GitHub)
 ```
-/plugin marketplace add /Users/christianalfoni/Development/claude-plugins
+/plugin marketplace add /Users/christianalfoni/Development/claude-autonomy
 /plugin install close-gaps@close-gaps
 /clear
 ```

@@ -33,7 +33,7 @@ Then `/clear` (or start a new session). The Stop hook activates automatically â€
 ### Try it locally first (no GitHub needed)
 
 ```shell
-/plugin marketplace add /Users/christianalfoni/Development/claude-plugins
+/plugin marketplace add /Users/christianalfoni/Development/claude-autonomy
 /plugin install close-gaps@christianalfoni
 ```
 
