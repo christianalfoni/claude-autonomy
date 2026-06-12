@@ -23,7 +23,7 @@ Three kinds of skill, all written to the project's own `.claude/skills/`:
 ## Install
 
 ```shell
-/plugin marketplace add christianalfoni/claude-plugins
+/plugin marketplace add christianalfoni/claude-autonomy
 /plugin install close-gaps@christianalfoni
 ```
 

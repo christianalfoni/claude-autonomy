@@ -5,8 +5,8 @@
   "author": {
     "name": "Christian Alfoni"
   },
-  "homepage": "https://christianalfoni.github.io/claude-plugins",
-  "repository": "https://github.com/christianalfoni/claude-plugins",
+  "homepage": "https://christianalfoni.github.io/claude-autonomy",
+  "repository": "https://github.com/christianalfoni/claude-autonomy",
   "license": "MIT",
   "keywords": ["skills", "self-improving", "hooks", "compounding", "agent-memory"]
 }

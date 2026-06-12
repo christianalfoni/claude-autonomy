@@ -35,10 +35,10 @@ Handoff for a fresh session rooted in this folder (`~/Development/claude-plugins
   Decide on branding (rename the marketplace to a personal handle if preferred).
 
 ### 3. Publish
-- Create GitHub repo `christianalfoni/claude-plugins`, push `main`.
+- Create GitHub repo `christianalfoni/claude-autonomy`, push `main`.
 - Enable **GitHub Pages**: Settings → Pages → Deploy from branch → `main` / `/docs`.
-  Site lands at `https://christianalfoni.github.io/claude-plugins/`.
-- Real install path becomes: `/plugin marketplace add christianalfoni/claude-plugins`.
+  Site lands at `https://christianalfoni.github.io/claude-autonomy/`.
+- Real install path becomes: `/plugin marketplace add christianalfoni/claude-autonomy`.
 
 ### 4. Hardening / reach (later)
 - **Windows portability**: rewrite `close-gaps-stop.sh` in Node (no `jq`/`grep`) so it
