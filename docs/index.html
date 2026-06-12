@@ -219,11 +219,13 @@ description: Knowledge about <domain>. Load before assuming how <domain> works o
 | doc | covers |
 |-----|--------|
 | token-refresh.md | the 401 retry gotcha + the working pattern |
+| webhooks → docs.vendor.com/webhooks (not captured yet) | signature verification + retry semantics |
 ```
 
 - One docs skill per domain (a library, a subsystem, a workflow); each entry is a `<topic>.md` file beside the SKILL.md.
 - Each doc captures the version, the gotcha, and the working pattern — what a future run needs, not this run's transient state.
 - Record *where* external docs live (canonical URL / changelog) so the source can be re-fetched, not just your distilled summary.
+- Note the neighbours you didn't need: when a source covers topics adjacent to the task, add a TOC row for each as a *forward reference* — the topic plus where to retrieve it (URL / section), without writing its `<topic>.md` yet. The index then records what *could* be pulled in later, so the next run finds it from the TOC instead of re-discovering the source. Keep these to genuinely adjacent topics with a real pointer — don't fabricate stubs or mirror a whole external TOC.
 - A single fact can stay inline in the SKILL.md; split into docs + a TOC once it grows past a few. (`project-overview` usually starts inline and grows a TOC as the project does.)
 - Update an existing doc or row rather than duplicating.
 - Keep `project-overview` current: whenever the structure, dependencies, or purpose differ from what it says, fix it — the gap healing itself.
