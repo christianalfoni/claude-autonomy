@@ -7,7 +7,7 @@ Paste one into a Claude Code session opened in your repo and it builds the capab
 your repo as files **you own and edit** — no plugin, no install, no marketplace, and no
 runtime dependency on this repo. Each prompt carries everything Claude needs.
 
-**→ [christianalfoni.github.io/claude-plugins](https://christianalfoni.github.io/claude-plugins) — copy a prompt.**
+**→ [christianalfoni.github.io/claude-autonomy](https://christianalfoni.github.io/claude-autonomy) — copy a prompt.**
 
 ## The prompts
 
@@ -36,7 +36,7 @@ PR. The dispatcher does zero Claude work; all behaviour lives in the routine.
 ## How to use
 
 1. Open Claude Code in the repo you want to enhance.
-2. Copy a prompt from the [site](https://christianalfoni.github.io/claude-plugins) (Edit it
+2. Copy a prompt from the [site](https://christianalfoni.github.io/claude-autonomy) (Edit it
    first if you want to tweak it).
 3. Paste it as your first message and follow along. Each prompt creates files you own, so
    you can tune the behaviour afterwards.
