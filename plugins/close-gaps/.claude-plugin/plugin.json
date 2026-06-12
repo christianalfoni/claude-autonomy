@@ -1,7 +1,7 @@
 {
   "name": "close-gaps",
   "description": "A self-improving agent loop: at the end of a working session a Stop hook runs a review that captures what would make the next run faster — as docs, validation-tool, and external-context skills committed to the project.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": {
     "name": "Christian Alfoni"
   },
