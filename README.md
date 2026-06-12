@@ -1,53 +1,60 @@
-# close-gaps
+# Make Claude autonomous on your repo
 
-A self-improving loop for Claude Code, packaged as a plugin.
+A small, growing set of open, **self-contained setup prompts** for
+[Claude Code](https://claude.com/claude-code) that make it work without you in the loop.
 
-When a working session ends, a **Stop hook** runs the `close-gaps` skill over the
-session and asks one question: *what would let the next run do this — and validate it
-as the project's real user — without re-deriving it?* Anything durable is captured as a
-**project-local skill**, so the project compounds knowledge and tooling over time.
+Paste one into a Claude Code session opened in your repo and it builds the capability into
+your repo as files **you own and edit** — no plugin, no install, no marketplace, and no
+runtime dependency on this repo. Each prompt carries everything Claude needs.
 
-## What it captures
+**→ [christianalfoni.github.io/claude-plugins](https://christianalfoni.github.io/claude-plugins) — copy a prompt.**
 
-Three kinds of skill, all written to the project's own `.claude/skills/`:
+## The prompts
 
-1. **Docs skills** — knowledge as an index of documents (how to use the project's
-   libraries, its conventions, the gotchas). The anchor is a self-healing
-   `project-overview`. Always *known*, because a skill's description is always loaded.
-2. **Validation-tool skills** — a generic CLI that drives the project's real interface
-   (UI / command / endpoint / public API) so a result is proven the way its consumer
-   sees it — never a build/lint/test proxy.
-3. **External-context tool skills** — a generic CLI over an external system (a DB, an
-   issue tracker, a third-party API). The one gap that can need *you*: authentication.
+### close-gaps — Claude that improves itself
 
-## Install
+When a working session ends, a **Stop hook** reviews the work and captures what would make
+the next run faster — as project-local skills committed to your repo. The prompt writes the
+review skill and the Stop hook into your `.claude/`, then hands them to you. Three kinds of
+skill it captures:
 
-```shell
-/plugin marketplace add christianalfoni/claude-plugins
-/plugin install close-gaps@christianalfoni
-```
+- **Docs** — how to use the project's libraries and conventions, indexed as a table of
+  contents, anchored by a self-healing `project-overview`.
+- **Validation tools** — a generic CLI that drives the real interface (UI, command,
+  endpoint, API) so a result is proven the way its user sees it. Never a proxy.
+- **External context** — a generic CLI over an external system (a DB, an issue tracker, an
+  API). The one gap that may need you: authentication.
 
-Then `/clear` (or start a new session). The Stop hook activates automatically — no
-`settings.json` edits.
+### /claude agent — Claude that works without you
 
-### Try it locally first (no GitHub needed)
+Comment `/claude …` on a GitHub issue or PR and a Claude session in Anthropic's cloud does
+the work and reports back — your laptop off, on your Max subscription. The prompt creates a
+small **dispatcher GitHub Action** (detect, gate, fire) and walks you through configuring a
+**Claude Code routine** that clones the repo, implements the change, and opens or updates a
+PR. The dispatcher does zero Claude work; all behaviour lives in the routine.
 
-```shell
-/plugin marketplace add /Users/christianalfoni/Development/claude-plugins
-/plugin install close-gaps@christianalfoni
-```
+## How to use
 
-## How it works
-
-- `plugins/close-gaps/skills/close-gaps/SKILL.md` — the review + the three skill formats.
-- `plugins/close-gaps/hooks/hooks.json` — registers the `Stop` hook on enable.
-- `plugins/close-gaps/hooks/close-gaps-stop.sh` — fires once per *working* session
-  (guarded by `stop_hook_active`; skips pure Q&A via a transcript relevance check).
+1. Open Claude Code in the repo you want to enhance.
+2. Copy a prompt from the [site](https://christianalfoni.github.io/claude-plugins) (Edit it
+   first if you want to tweak it).
+3. Paste it as your first message and follow along. Each prompt creates files you own, so
+   you can tune the behaviour afterwards.
 
 ## Requirements
 
-The Stop hook is a bash script using `jq` and `grep` — works on macOS/Linux. Native
-Windows (without WSL/Git Bash) is not yet supported; see [PLAN.md](PLAN.md).
+- **close-gaps** — the Stop hook is bash using `jq` and `grep`: macOS/Linux, or Windows via
+  WSL/Git Bash.
+- **/claude agent** — a claude.ai Pro/Max/Team/Enterprise plan with Claude Code on the web
+  (routines) enabled, a GitHub repo, and the ability to add repo secrets. Routines and the
+  routine-fire API are a research preview.
+
+## How it's built
+
+The prompts live inline in [`docs/index.html`](docs/index.html) — that page is both the
+site and the single source for the prompt text. The Copy/Edit buttons read them with no
+network fetch, and the prompts themselves install nothing *from* this repo. There is
+nothing to install to use these; you copy a prompt and run it in your own repo.
 
 ## License
 
