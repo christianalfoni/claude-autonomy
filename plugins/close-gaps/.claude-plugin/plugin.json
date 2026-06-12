@@ -5,8 +5,8 @@
   "author": {
     "name": "Christian Alfoni"
   },
-  "homepage": "https://christianalfoni.github.io/close-gaps",
-  "repository": "https://github.com/christianalfoni/close-gaps",
+  "homepage": "https://christianalfoni.github.io/claude-plugins",
+  "repository": "https://github.com/christianalfoni/claude-plugins",
   "license": "MIT",
   "keywords": ["skills", "self-improving", "hooks", "compounding", "agent-memory"]
 }

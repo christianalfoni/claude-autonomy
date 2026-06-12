@@ -1,6 +1,6 @@
 # PLAN — close-gaps plugin + marketplace + site
 
-Handoff for a fresh session rooted in this folder (`~/Development/close-gaps`).
+Handoff for a fresh session rooted in this folder (`~/Development/claude-plugins`).
 
 ## What's already scaffolded
 - Plugin: `plugins/close-gaps/` — `plugin.json`, `skills/close-gaps/SKILL.md` (copied
@@ -17,7 +17,7 @@ Handoff for a fresh session rooted in this folder (`~/Development/close-gaps`).
 
 ### 1. Verify the plugin locally (before any GitHub)
 ```
-/plugin marketplace add /Users/christianalfoni/Development/close-gaps
+/plugin marketplace add /Users/christianalfoni/Development/claude-plugins
 /plugin install close-gaps@close-gaps
 /clear
 ```
@@ -35,10 +35,10 @@ Handoff for a fresh session rooted in this folder (`~/Development/close-gaps`).
   Decide on branding (rename the marketplace to a personal handle if preferred).
 
 ### 3. Publish
-- Create GitHub repo `christianalfoni/close-gaps`, push `main`.
+- Create GitHub repo `christianalfoni/claude-plugins`, push `main`.
 - Enable **GitHub Pages**: Settings → Pages → Deploy from branch → `main` / `/docs`.
-  Site lands at `https://christianalfoni.github.io/close-gaps/`.
-- Real install path becomes: `/plugin marketplace add christianalfoni/close-gaps`.
+  Site lands at `https://christianalfoni.github.io/claude-plugins/`.
+- Real install path becomes: `/plugin marketplace add christianalfoni/claude-plugins`.
 
 ### 4. Hardening / reach (later)
 - **Windows portability**: rewrite `close-gaps-stop.sh` in Node (no `jq`/`grep`) so it

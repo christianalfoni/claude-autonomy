@@ -55,26 +55,11 @@
   </header>
 
   <section>
-    <h2>The idea</h2>
-    <p class="sub">One question, asked automatically at the end of every working session:</p>
-    <pre>What would let the next run do this — and validate it as the
-project's real user — without re-deriving it?</pre>
-    <p class="sub" style="margin-top:20px">Whatever the answer, it becomes a skill. Because a
-      skill's description is always loaded, the catalog of what your project knows and can do is
-      always present — and grows on its own.</p>
-  </section>
-
-  <section>
-    <h2>Three kinds of skill</h2>
-    <p class="sub">Written to your project's own <code>.claude/skills/</code>, never globally.</p>
-    <div class="cards">
-      <div class="card"><div class="n">01 · docs</div><h3>Knowledge</h3>
-        <p>How to use the project's libraries and conventions, indexed as a table of contents. Anchored by a self-healing <code>project-overview</code>.</p></div>
-      <div class="card"><div class="n">02 · validate</div><h3>Validation tools</h3>
-        <p>A generic CLI that drives the real interface — UI, command, endpoint, API — so a result is proven the way its user sees it. Never a proxy.</p></div>
-      <div class="card"><div class="n">03 · reach</div><h3>External context</h3>
-        <p>A generic CLI over an external system — a DB, an issue tracker, an API. The one gap that may need you: authentication.</p></div>
-    </div>
+    <h2>Install</h2>
+    <p class="sub">Adds a skill and a Stop hook — no <code>settings.json</code> edits.</p>
+    <pre>/plugin marketplace add christianalfoni/claude-plugins
+/plugin install close-gaps@christianalfoni</pre>
+    <p class="step"># then /clear, and work as usual</p>
   </section>
 
   <section>
@@ -88,16 +73,21 @@ project's real user — without re-deriving it?</pre>
   </section>
 
   <section>
-    <h2>Install</h2>
-    <p class="sub">Adds a skill and a Stop hook — no <code>settings.json</code> edits.</p>
-    <pre>/plugin marketplace add christianalfoni/close-gaps
-/plugin install close-gaps@christianalfoni</pre>
-    <p class="step"># then /clear, and work as usual</p>
+    <h2>What it captures</h2>
+    <p class="sub">Three kinds of skill, written to your project's own <code>.claude/skills/</code> — never globally.</p>
+    <div class="cards">
+      <div class="card"><div class="n">01 · docs</div><h3>Knowledge</h3>
+        <p>How to use the project's libraries and conventions, indexed as a table of contents. Anchored by a self-healing <code>project-overview</code>.</p></div>
+      <div class="card"><div class="n">02 · validate</div><h3>Validation tools</h3>
+        <p>A generic CLI that drives the real interface — UI, command, endpoint, API — so a result is proven the way its user sees it. Never a proxy.</p></div>
+      <div class="card"><div class="n">03 · reach</div><h3>External context</h3>
+        <p>A generic CLI over an external system — a DB, an issue tracker, an API. The one gap that may need you: authentication.</p></div>
+    </div>
   </section>
 
   <footer>
-    <a href="https://github.com/christianalfoni/close-gaps">GitHub</a>
-    <a href="https://github.com/christianalfoni/close-gaps/blob/main/plugins/close-gaps/skills/close-gaps/SKILL.md">The skill</a>
+    <a href="https://github.com/christianalfoni/claude-plugins">GitHub</a>
+    <a href="https://github.com/christianalfoni/claude-plugins/blob/main/plugins/close-gaps/skills/close-gaps/SKILL.md">The skill</a>
     <span>MIT</span>
   </footer>
 

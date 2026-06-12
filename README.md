@@ -23,7 +23,7 @@ Three kinds of skill, all written to the project's own `.claude/skills/`:
 ## Install
 
 ```shell
-/plugin marketplace add christianalfoni/close-gaps
+/plugin marketplace add christianalfoni/claude-plugins
 /plugin install close-gaps@christianalfoni
 ```
 
@@ -33,7 +33,7 @@ Then `/clear` (or start a new session). The Stop hook activates automatically â€
 ### Try it locally first (no GitHub needed)
 
 ```shell
-/plugin marketplace add /Users/christianalfoni/Development/close-gaps
+/plugin marketplace add /Users/christianalfoni/Development/claude-plugins
 /plugin install close-gaps@christianalfoni
 ```
 
