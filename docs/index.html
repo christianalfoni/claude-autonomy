@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>close-gaps — a self-improving loop for Claude Code</title>
-<meta name="description" content="At the end of a working session, Claude Code reviews the work and captures docs, validation tools, and external-context tools as project skills — so the next run is faster.">
+<title>Make Claude autonomous on your repo — open prompts for Claude Code</title>
+<meta name="description" content="Open, self-contained setup prompts for autonomous Claude Code. Paste one into Claude Code and it builds the capability into your repo as files you own: close-gaps lets the agent improve itself after every session; the @claude agent turns a GitHub mention into a cloud session that ships the change.">
 <style>
   :root{
     --bg:#0b0d10; --panel:#13161b; --line:#232830; --fg:#e7ebf0; --muted:#9aa4b2;
@@ -20,25 +20,50 @@
     border:1px solid var(--line);border-radius:999px;padding:4px 12px;margin-bottom:24px}
   h1{font-size:46px;line-height:1.1;margin:0 0 16px;letter-spacing:-.02em}
   h1 .g{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
-  .lead{font-size:20px;color:var(--muted);max-width:640px;margin:0}
+  .lead{font-size:20px;color:var(--muted);max-width:660px;margin:0}
+  .lead code{font-family:var(--mono);font-size:.9em;color:var(--fg)}
+  .lead b{color:var(--fg);font-weight:600}
   section{padding:48px 0;border-bottom:1px solid var(--line)}
   h2{font-size:24px;margin:0 0 8px;letter-spacing:-.01em}
-  .sub{color:var(--muted);margin:0 0 28px}
+  h2 code{font-family:var(--mono);font-size:.85em;color:var(--accent)}
+  .tag{display:inline-block;font-family:var(--mono);font-size:11px;color:var(--accent2);
+    border:1px solid var(--line);border-radius:999px;padding:2px 9px;margin-left:10px;
+    vertical-align:middle;letter-spacing:.02em}
+  .sub{color:var(--muted);margin:0 0 28px;max-width:640px}
   .cards{display:grid;gap:16px;grid-template-columns:1fr}
   @media(min-width:680px){.cards{grid-template-columns:1fr 1fr 1fr}}
   .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px}
   .card h3{margin:0 0 8px;font-size:16px}
   .card p{margin:0;color:var(--muted);font-size:14px}
   .n{font-family:var(--mono);font-size:12px;color:var(--accent2)}
-  pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:16px 18px;
-    overflow:auto;font-family:var(--mono);font-size:14px;color:#d7e2ee}
   .step{color:var(--muted);font-family:var(--mono);font-size:13px}
-  ol.flow{list-style:none;counter-reset:s;padding:0;margin:0;display:grid;gap:14px}
+  ol.flow{list-style:none;counter-reset:s;padding:0;margin:0 0 28px;display:grid;gap:14px}
   ol.flow li{counter-increment:s;padding-left:40px;position:relative;color:var(--muted)}
   ol.flow li::before{content:counter(s);position:absolute;left:0;top:0;width:26px;height:26px;
     border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;
     font-family:var(--mono);font-size:13px;color:var(--accent)}
   ol.flow b{color:var(--fg)}
+  .row{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--sans);font-size:15px;
+    font-weight:600;color:#0b0d10;background:linear-gradient(90deg,var(--accent),var(--accent2));
+    border:none;border-radius:10px;padding:11px 18px;cursor:pointer}
+  .btn:hover{opacity:.92}
+  .btn.ghost{background:none;color:var(--accent);border:1px solid var(--line)}
+  .btn.ghost:hover{border-color:var(--accent);opacity:1}
+  .prompt textarea{display:block;width:100%;margin-top:16px;min-height:340px;resize:vertical;
+    background:var(--code);border:1px solid var(--line);border-radius:10px;padding:16px 18px;
+    font-family:var(--mono);font-size:13px;line-height:1.55;color:#d7e2ee;tab-size:2}
+  .prompt textarea[hidden]{display:none}
+  .seth{font-size:17px;margin:38px 0 6px;letter-spacing:-.01em}
+  .setp{color:var(--muted);margin:0 0 14px;max-width:640px}
+  ol.steps{margin:0;padding-left:22px;color:var(--muted)}
+  ol.steps li{margin:9px 0}
+  ol.steps b{color:var(--fg)}
+  .ilink{font-family:var(--sans);font-size:1em;color:var(--accent);background:none;border:none;
+    padding:0;cursor:pointer;text-decoration:underline}
+  .ilink:hover{color:var(--fg)}
+  .setp code,ol.steps code{font-family:var(--mono);font-size:.88em;color:var(--fg);
+    background:var(--code);border:1px solid var(--line);border-radius:5px;padding:1px 5px}
   footer{padding:40px 0 80px;color:var(--muted);font-size:14px;display:flex;gap:18px;flex-wrap:wrap}
   a{color:var(--accent);text-decoration:none}
   a:hover{text-decoration:underline}
@@ -48,33 +73,19 @@
 <div class="wrap">
 
   <header>
-    <span class="badge">Claude Code plugin</span>
-    <h1>Your agent should get <span class="g">better every session</span>.</h1>
-    <p class="lead">close-gaps reviews each working session when it ends and captures
-      what would make the next run faster — as skills committed to your project.</p>
+    <span class="badge">autonomy for Claude Code</span>
+    <h1>Make Claude <span class="g">autonomous</span> on your repo.</h1>
+    <p class="lead">A growing set of open, self-contained prompts that make Claude Code work
+      without you in the loop — improving itself after every session, and acting on its own
+      when you mention it on a GitHub issue or PR. <b>Paste one into Claude Code and it
+      builds the capability into your repo as files you own and edit.</b></p>
   </header>
 
   <section>
-    <h2>Install</h2>
-    <p class="sub">Adds a skill and a Stop hook — no <code>settings.json</code> edits.</p>
-    <pre>/plugin marketplace add christianalfoni/claude-plugins
-/plugin install close-gaps@christianalfoni</pre>
-    <p class="step"># then /clear, and work as usual</p>
-  </section>
-
-  <section>
-    <h2>How it works</h2>
-    <ol class="flow">
-      <li>You finish a piece of work and the session goes to stop.</li>
-      <li>A <b>Stop hook</b> fires — once per working session, skipping trivial Q&amp;A.</li>
-      <li>It runs the <b>close-gaps review</b> over the session.</li>
-      <li>Durable findings are committed as <b>project skills</b>. Next run starts ahead.</li>
-    </ol>
-  </section>
-
-  <section>
-    <h2>What it captures</h2>
-    <p class="sub">Three kinds of skill, written to your project's own <code>.claude/skills/</code> — never globally.</p>
+    <h2>close-gaps <span class="tag">prompt · improves itself</span></h2>
+    <p class="sub">Claude that gets better on its own. When a working session ends, a Stop
+      hook reviews the work and commits what would make the next run faster — as skills in
+      your project's own <code>.claude/skills/</code>. No prompting, no curation from you.</p>
     <div class="cards">
       <div class="card"><div class="n">01 · docs</div><h3>Knowledge</h3>
         <p>How to use the project's libraries and conventions, indexed as a table of contents. Anchored by a self-healing <code>project-overview</code>.</p></div>
@@ -83,14 +94,397 @@
       <div class="card"><div class="n">03 · reach</div><h3>External context</h3>
         <p>A generic CLI over an external system — a DB, an issue tracker, an API. The one gap that may need you: authentication.</p></div>
     </div>
+    <p class="step" style="margin-top:28px"># paste into Claude Code in your repo — it writes the Stop hook +
+# review skill into .claude/, then tells you to /clear</p>
+    <div class="prompt">
+      <div class="row">
+        <button class="btn" data-copy="pp-closegaps">Copy prompt</button>
+        <button class="btn ghost" data-edit="pp-closegaps">Edit</button>
+      </div>
+      <textarea id="pp-closegaps" data-src="src-closegaps" spellcheck="false" hidden></textarea>
+    </div>
+  </section>
+
+  <section>
+    <h2><code>@claude</code> agent <span class="tag">works without you</span></h2>
+    <p class="sub">Claude that works without you. Mention <code>@claude …</code> on a GitHub
+      issue and a session in Anthropic's cloud does the work and opens a PR — your laptop
+      off, on your Max subscription. Two pieces, set up once.</p>
+    <ol class="flow">
+      <li>You mention <b>@claude …</b> in an issue — its body or a comment.</li>
+      <li>A tiny <b>dispatcher Action</b> you own checks permissions and fires a cloud routine — it does zero Claude work itself.</li>
+      <li>The <b>routine</b> clones the repo, implements the change, runs the tests, and opens a PR.</li>
+      <li>From there, <b>Auto-fix</b> watches the PR and handles review comments and CI on its own.</li>
+    </ol>
+
+    <h3 class="seth">1 · Set up the routine</h3>
+    <p class="setp">One-time, in the web UI — the same for every repo:</p>
+    <ol class="steps">
+      <li>Install the <b>Claude GitHub App</b> on the repo — <a href="https://github.com/apps/claude">github.com/apps/claude</a> (or accept the prompt during setup). Required: it gives the routine git access and receives the PR webhooks Auto-fix runs on.</li>
+      <li>Open <a href="https://claude.ai/code/routines/new">claude.ai/code/routines/new</a> and point the routine at your repo.</li>
+      <li>Paste the routine prompt as its instructions — <button class="ilink" data-copy-src="src-routine">copy it</button>.</li>
+      <li>Choose <b>API</b> as the trigger.</li>
+      <li>Under <b>Behavior</b>, turn on <b>Auto-fix pull requests</b>, then click <b>Create</b>.</li>
+      <li>On creation the API token is generated automatically and shown <b>once</b> — copy it before you move to the routine overview, and save it as a <a href="https://docs.github.com/actions/security-guides/using-secrets-in-github-actions">repository secret</a> (Settings → Secrets and variables → Actions → <b>New repository secret</b>) named <code>CLAUDE_ROUTINE_TOKEN</code>; you can't retrieve it afterward.</li>
+      <li>Copy the trigger's fire URL (this one stays visible) and save it the same way as <code>CLAUDE_ROUTINE_FIRE_URL</code>.</li>
+    </ol>
+
+    <h3 class="seth">2 · Add the dispatcher</h3>
+    <p class="setp">Paste this into Claude Code in your repo — it writes the GitHub Action that
+      detects <code>@claude</code> on an issue and fires your routine, using the two secrets
+      you just created.</p>
+    <div class="prompt">
+      <div class="row">
+        <button class="btn" data-copy="pp-claude">Copy prompt</button>
+        <button class="btn ghost" data-edit="pp-claude">Edit</button>
+      </div>
+      <textarea id="pp-claude" data-src="src-claude" spellcheck="false" hidden></textarea>
+    </div>
   </section>
 
   <footer>
     <a href="https://github.com/christianalfoni/claude-plugins">GitHub</a>
-    <a href="https://github.com/christianalfoni/claude-plugins/blob/main/plugins/close-gaps/skills/close-gaps/SKILL.md">The skill</a>
     <span>MIT</span>
   </footer>
 
 </div>
+
+<!-- Prompt sources live inline (no fetch). Each <script type="text/plain"> holds one
+     self-contained prompt verbatim; the script below copies it into the textarea. -->
+<script type="text/plain" id="src-closegaps">
+You are installing "close-gaps" into THIS repository — a self-improving loop for Claude
+Code. Create it as files I own in this repo (project-local, under .claude/), exactly as
+specified below. Everything you need is in this prompt — do not fetch anything. When done,
+tell me to /clear.
+
+## What close-gaps is
+
+At the end of a working session a Stop hook fires once and runs a "close-gaps" review: you
+look back over the session for (1) knowledge you had to re-derive, (2) results you couldn't
+validate the way the project's real user would, and (3) external systems you struggled to
+reach — and you close each gap by writing a project skill into .claude/skills/. It
+self-guards: it runs only once per session end and skips trivial / read-only / pure-Q&A
+sessions. The effect: the project compounds knowledge and tooling, so each run starts ahead
+of the last.
+
+Do these steps in order.
+
+## Step 1 — write the review skill
+
+Create  .claude/skills/close-gaps/SKILL.md  with EXACTLY this content:
+
+````markdown
+---
+name: close-gaps
+description: >
+  At the end of a working session (a Stop hook runs this) — or the moment you hit a
+  gap mid-work — analyse where you lacked knowledge, a tool to validate your work as
+  the project's real user, or a way to reach external systems, and close each gap by
+  creating or improving one of three kinds of project skill: a docs skill, a
+  validation-tool skill, or an external-context tool skill.
+---
+
+# Close gaps
+
+When you finish work, look back and ask: **what knowledge did I have to re-derive,
+what couldn't I validate the way the project's real user would, and what external
+system did I struggle to reach?** Close each gap by creating or improving a skill in
+the project's `.claude/skills/` (never global). Do it yourself — don't ask permission,
+don't fake validation with a proxy (build / lint / typecheck / unit tests all pass
+while the real thing is broken), and improve a near-match before adding a new one. The
+*one* thing you may need from the user is a credential for an external-context tool (#3).
+
+There are three kinds of skill to create.
+
+## 1. Docs skill — knowledge
+
+A skill whose SKILL.md is an **index (a table of contents)** of documents. The index is
+always loaded (it's the skill's description + TOC), so the knowledge is always *known*;
+each document is read on demand. This is how a project's knowledge — how to use its
+libraries, its conventions, the gotchas you hit — grows without bloating context.
+
+**The anchor docs skill is `project-overview`** — every project gets one: what the
+project does, where code lives in the folder structure, how to run / build / test it,
+and its core dependencies. Write its description so a fresh session loads it first
+("Read at the start of any task in this project"); it's the orientation the agent
+always picks up. A wrong or missing overview is itself a knowledge gap, so every
+session corrects and extends it — it converges to accurate over time.
+
+```markdown
+---
+name: <domain>-docs
+description: Knowledge about <domain>. Load before assuming how <domain> works or researching it.
+---
+# <Domain>
+| doc | covers |
+|-----|--------|
+| token-refresh.md | the 401 retry gotcha + the working pattern |
+```
+
+- One docs skill per domain (a library, a subsystem, a workflow); each entry is a `<topic>.md` file beside the SKILL.md.
+- Each doc captures the version, the gotcha, and the working pattern — what a future run needs, not this run's transient state.
+- Record *where* external docs live (canonical URL / changelog) so the source can be re-fetched, not just your distilled summary.
+- A single fact can stay inline in the SKILL.md; split into docs + a TOC once it grows past a few. (`project-overview` usually starts inline and grows a TOC as the project does.)
+- Update an existing doc or row rather than duplicating.
+- Keep `project-overview` current: whenever the structure, dependencies, or purpose differ from what it says, fix it — the gap healing itself.
+
+## 2. Validation-tool skill — proof from the user's side
+
+A skill wrapping a **generic CLI** that drives the project's real interface (UI,
+command, endpoint, public API) so you can confirm a result the way its consumer would —
+the only real proof. Build a reusable *surface*, not a hardcoded one-off check; the
+SKILL.md documents how to drive it.
+
+```markdown
+---
+name: drive-<app>
+description: Drive <app> as its real user to validate behaviour end-to-end. Use to confirm a change works.
+---
+# Drive <app>
+A CLI that exercises the real interface — grow it, don't write one-off checks.
+`node drive.mjs <cmd>`:  navigate <url> | click <sel> | read <sel> | assert <sel> <text>
+e.g.  navigate / && click "#inc" && assert "#count" "1"
+```
+
+- Make it generic (verbs / flags) so every future check is a new *invocation*, not a new script.
+- The interface dictates the tool: a browser driver for a UI, a curl wrapper for an endpoint, a script that imports and exercises a library's public API.
+- Grow the CLI by adding commands as new surfaces appear, and document each in the SKILL.md.
+- No way to drive the real interface yet? Building this IS the work — do it before claiming done.
+- Keep the tool in the skill folder so it ships with the project; reuse the project's own dependencies rather than bundling.
+
+## 3. External-context tool skill — reach outside the project
+
+A skill wrapping a **CLI/API** that reads or operates on an external system the project
+depends on — a database, an issue tracker, a third-party API, a cloud service — so the
+next run queries it directly instead of re-deriving the access path. Like the
+validation tool it's a generic surface, usually built over an existing CLI (`gh`,
+`psql`, a vendor CLI) or a thin wrapper on the API.
+
+```markdown
+---
+name: <system>-context
+description: Query/operate <system> (e.g. the issue tracker, the prod read-replica). Needs <ENV_VAR>. Use to pull external context instead of guessing.
+---
+# <System>
+Wraps `<cli>` to reach <system>. Auth: set `<ENV_VAR>` (the user provides it).
+`<cli> <cmd>`:  list <filter> | get <id> | query "<read-only request>"
+e.g.  list "label:bug state:open"
+```
+
+- Build on the system's existing CLI/API; don't reinvent it. Keep the surface generic and grow it.
+- **Auth is the user's to give — this is the one gap you can't close alone.** Read credentials from an env var, never hardcode or commit them. If the credential is missing, stop and ask the user for it (a secret only they have), and name the exact env var in the SKILL.md.
+- Default to read-only / least privilege; make any write or destructive command explicit and obvious.
+- Note the auth scope, plus any rate limits or cost, so the next run doesn't trip them.
+
+**Report at the end:** name each skill you created or improved, or say in one line that there was nothing durable.
+````
+
+## Step 2 — write the Stop hook script
+
+Create  .claude/hooks/close-gaps-stop.sh  with EXACTLY this content, then make it executable
+(chmod +x). Do not change its logic — it self-guards (runs once per session end via
+stop_hook_active, and skips sessions where no Edit/Write/Bash/WebFetch/WebSearch tool was
+used). It needs `jq` and `grep` (bash; macOS/Linux, or Windows via WSL/Git Bash).
+
+```bash
+#!/usr/bin/env bash
+# Stop hook: at the end of a working session, force one close-gaps review pass.
+#
+# - Runs exactly ONCE per session end: if stop_hook_active is true, this stop was
+#   caused by our own previous block (the review already ran) -> allow it.
+# - Skips trivial sessions: if the transcript shows no work/research tools were
+#   used, there's nothing to harvest -> allow the stop.
+# - Otherwise blocks the stop and instructs the model to run the close-gaps review,
+#   after which it stops again (now with stop_hook_active=true) and is allowed.
+set -euo pipefail
+
+input=$(cat)
+active=$(jq -r '.stop_hook_active // false' <<<"$input")
+[ "$active" = "true" ] && exit 0   # review already ran this session-end; let it stop
+
+transcript=$(jq -r '.transcript_path // empty' <<<"$input")
+
+# Relevance gate: only review if the session actually did work or research.
+# (A pure Q&A / read-only session has no gaps or discoveries to capture.)
+if [ -n "$transcript" ] && [ -f "$transcript" ]; then
+  if ! grep -Eq '"name"[[:space:]]*:[[:space:]]*"(Edit|Write|MultiEdit|NotebookEdit|Bash|WebFetch|WebSearch)"' "$transcript"; then
+    exit 0
+  fi
+fi
+
+reason='[Automated end-of-session review] Before this session ends, invoke the `close-gaps` skill and run its review over THIS session. If there is genuinely nothing durable to capture, reply with one line saying so. Then stop.'
+
+jq -n --arg r "$reason" '{decision: "block", reason: $r}'
+```
+
+## Step 3 — register the Stop hook
+
+Edit  .claude/settings.json  to register the hook, MERGING into any existing settings (do
+not clobber other keys or hooks):
+
+    {
+      "hooks": {
+        "Stop": [
+          { "hooks": [ { "type": "command",
+                         "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/close-gaps-stop.sh" } ] }
+        ]
+      }
+    }
+
+$CLAUDE_PROJECT_DIR resolves to the project root in hook commands. If you're unsure of the
+exact hook-config shape, verify it against the current Claude Code hooks settings reference
+before writing.
+
+## Step 4 — confirm and hand off
+
+- Show me the files you created and the settings.json change.
+- Tell me to run /clear (or start a new session) so the Stop hook is registered.
+- Remind me these files are mine to tune: the review behaviour in
+  .claude/skills/close-gaps/SKILL.md, and the relevance gate / trigger logic in
+  .claude/hooks/close-gaps-stop.sh.
+- They live under .claude/ in the repo, so I can commit them to share the loop with my team.
+</script>
+
+<script type="text/plain" id="src-claude">
+You are creating the "@claude" dispatcher for THIS repository: a small GitHub Action that
+turns an "@claude ..." mention on an issue into a fired Claude Code cloud routine. Build the
+workflow file only — the one-time routine + secrets setup is a fixed web-UI process the human
+does separately (it's the same for every repo). Use your own judgment on YAML structure, but
+use any regex I hand you verbatim, since those are the easy-to-get-wrong parts. Pause and ask
+me before doing anything you can't verify.
+
+## How it fits
+
+"@claude ..." on an issue → THIS dispatcher (gate, sanitise, fire, ack) → a cloud routine
+(clones the repo, implements, opens a PR) → the routine's Auto-fix watches that PR and handles
+CI + review comments on its own. The dispatcher exists only for the kickoff: routines have
+native triggers for pull_request and release, but NOT issue comments, so this is the one
+piece that has to listen for the "@claude" mention. (@claude is a real mention because the
+Claude GitHub App is installed — but the App does NOT act on mentions itself, so nothing
+fires unless THIS dispatcher does.)
+
+## Create the dispatcher workflow
+
+Create a GitHub Actions workflow (e.g. .github/workflows/claude-agent.yml) that fires when
+someone with write access mentions "@claude ..." in an ISSUE — either its body or a comment.
+Honor these constraints:
+
+Events (two):
+- issues (types: [opened]) — a new issue whose BODY mentions @claude.
+- issue_comment (types: [created]) — a comment that mentions @claude. Skip it when
+  github.event.issue.pull_request is present (those are PR comments — Auto-fix's job).
+The two events expose the same fields under different paths — branch on github.event_name:
+for issues read github.event.issue (.body, .user, .author_association, .html_url); for
+issue_comment read github.event.comment (.body, .user, .author_association, .html_url). The
+issue number is github.event.issue.number for both.
+
+Trigger: the @claude mention in that body — match /(^|\s)@claude\b/ (a standalone mention, so
+an email-like foo@claude won't match). A coarse contains() on the relevant body in the
+job-level if: is a fine cheap pre-filter.
+
+Permissions block: issues: write, contents: read.
+
+Guards — ALL must fail closed (keep every post-gate step on default success(); do NOT add an
+always() step that could fire unauthenticated):
+- Write-access gate: only proceed when author_association is OWNER, MEMBER, or COLLABORATOR.
+  Without this, anyone could command the agent on a public repo.
+- Loop guard: ignore items authored by a Bot (the comment's or issue's user.type == 'Bot') —
+  this stops the dispatcher's own ack (posted as github-actions[bot]) from re-triggering it.
+- Dedupe: before firing, scan the issue's comments for a prior "🤖 On it" ack carrying a
+  hidden marker keyed to THIS trigger (the comment id, or "issue-body" for an opened issue),
+  and skip if present. The /fire endpoint has no idempotency key, so a retry would otherwise
+  burn a run off the daily cap.
+- Sanitise the body before forwarding it (the comment body, or the issue title + body) — it's
+  a prompt-injection surface. Use these exact patterns, with explicit \u escapes, NEVER
+  literal invisible characters:
+    strip HTML comments:  body.replace(/<!--[\s\S]*?-->/g, '')
+    strip zero-width:     .replace(/[\u200B-\u200D\u2060\uFEFF]/g, '')
+
+Firing the routine — one authenticated POST:
+- URL: the routine's fire endpoint, stored verbatim as the secret CLAUDE_ROUTINE_FIRE_URL.
+  It looks like https://api.anthropic.com/v1/claude_code/routines/<trig_...>/fire — the web
+  UI gives you the complete URL when you add the API trigger. POST to it directly; do not
+  reconstruct it.
+- Headers:
+    Authorization: Bearer ${CLAUDE_ROUTINE_TOKEN}   (per-routine token, prefixed sk-ant-oat01-)
+    anthropic-beta: experimental-cc-routine-2026-04-01
+    anthropic-version: 2023-06-01
+    Content-Type: application/json
+- Body: {"text": "<context only>"} — repo, issue number, the issue/comment URL, and the
+  sanitised request text (the comment body, or the new issue's title + body). Context only;
+  NO behaviour/instructions. (The text is freeform, max 65,536 chars, not parsed; it is
+  appended to the routine's saved prompt.)
+- On 200, the response carries claude_code_session_url — post it back as a comment:
+  "🤖 On it — watch live: <url>".
+- On a non-200 (e.g. 429 daily-run cap, 400 paused routine, 401 bad token), post a short
+  comment saying it couldn't start and why, instead of failing silently in the Actions log.
+
+Secrets the workflow reads (I will create these): CLAUDE_ROUTINE_FIRE_URL (the full /fire
+URL from the web UI) and CLAUDE_ROUTINE_TOKEN (the per-routine sk-ant-oat01- token).
+
+Note: the routine-fire API is a research preview under the beta header above; if you can
+check current Anthropic docs for the exact request/response shape, do.
+
+## When you're done
+
+Confirm the workflow is in place and remind me to complete the one-time routine setup if I
+haven't yet — those are fixed web-UI steps (create the routine, enable Auto-fix, paste the
+routine prompt, generate the token, add the two secrets), the same for every repo. Leave the
+commit to me unless I ask.
+</script>
+
+<script type="text/plain" id="src-routine">
+You are an autonomous coding agent, fired from an "@claude" mention on a GitHub issue. The
+run input gives you the repo, the issue number, the comment URL, and the request text.
+
+1. Read the full issue thread with your GitHub tools.
+2. Determine what is being asked. If it is unclear, ambiguous, or risky, post a comment
+   asking for clarification instead of guessing. (Never write the literal string "@claude"
+   in a comment — it would re-trigger the dispatcher.)
+3. Implement the change, run the tests, and open a PR. Reference the issue in the PR
+   description with a closing keyword (e.g. "Closes #<issue-number>") — that links the PR to
+   the issue and closes it on merge, so there's no need to post a separate comment on the issue.
+
+Once the PR is open you don't need to be re-triggered for follow-ups: Auto-fix watches the
+PR and handles CI failures and review comments automatically.
+</script>
+
+<script>
+  // Prompts are inlined above in <script type="text/plain"> blocks — no fetch, no repo
+  // dependency. Copy works without expanding; Edit reveals the textarea; Copy copies the
+  // textarea's current value, so any edits are included.
+  document.querySelectorAll("textarea[data-src]").forEach(ta => {
+    const src = document.getElementById(ta.dataset.src);
+    if (src) ta.value = src.textContent.replace(/^\n/, "").replace(/\s+$/, "");
+  });
+
+  document.querySelectorAll("button[data-copy]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const ta = document.getElementById(btn.dataset.copy), label = btn.textContent;
+      try { await navigator.clipboard.writeText(ta.value); btn.textContent = "Copied ✓"; }
+      catch (e) { btn.textContent = "Copy failed"; }
+      setTimeout(() => { btn.textContent = label; }, 2000);
+    });
+  });
+
+  document.querySelectorAll("button[data-edit]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const ta = document.getElementById(btn.dataset.edit);
+      ta.hidden = !ta.hidden;
+      btn.textContent = ta.hidden ? "Edit" : "Hide";
+    });
+  });
+
+  // Inline copy: copies a source block's text directly, no textarea, no edit.
+  document.querySelectorAll("button[data-copy-src]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const src = document.getElementById(btn.dataset.copySrc), label = btn.textContent;
+      const text = src.textContent.replace(/^\n/, "").replace(/\s+$/, "");
+      try { await navigator.clipboard.writeText(text); btn.textContent = "copied ✓"; }
+      catch (e) { btn.textContent = "copy failed"; }
+      setTimeout(() => { btn.textContent = label; }, 2000);
+    });
+  });
+</script>
 </body>
 </html>
