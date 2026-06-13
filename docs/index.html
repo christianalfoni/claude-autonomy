@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Make Claude autonomous on your repo — open prompts for Claude Code</title>
-<meta name="description" content="Open, self-contained setup prompts for autonomous Claude Code. Paste one into Claude Code and it builds the capability into your repo as files you own: close-gaps lets the agent improve itself after every session; the @claude agent turns a GitHub mention into a cloud session that ships the change.">
+<meta name="description" content="Open, self-contained setup prompts for autonomous Claude Code. Paste one into Claude Code and it builds the capability into your repo as files you own: close-gaps lets the agent improve itself after every session; the @claude agent turns a GitHub mention into a cloud session that ships the change; secrets injects real credentials into a routine at runtime without committing them.">
 <style>
   :root{
     --bg:#0b0d10; --panel:#13161b; --line:#232830; --fg:#e7ebf0; --muted:#9aa4b2;
@@ -37,12 +37,6 @@
   .card p{margin:0;color:var(--muted);font-size:14px}
   .n{font-family:var(--mono);font-size:12px;color:var(--accent2)}
   .step{color:var(--muted);font-family:var(--mono);font-size:13px}
-  ol.flow{list-style:none;counter-reset:s;padding:0;margin:0 0 28px;display:grid;gap:14px}
-  ol.flow li{counter-increment:s;padding-left:40px;position:relative;color:var(--muted)}
-  ol.flow li::before{content:counter(s);position:absolute;left:0;top:0;width:26px;height:26px;
-    border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;
-    font-family:var(--mono);font-size:13px;color:var(--accent)}
-  ol.flow b{color:var(--fg)}
   .row{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
   .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--sans);font-size:15px;
     font-weight:600;color:#0b0d10;background:linear-gradient(90deg,var(--accent),var(--accent2));
@@ -54,16 +48,6 @@
     background:var(--code);border:1px solid var(--line);border-radius:10px;padding:16px 18px;
     font-family:var(--mono);font-size:13px;line-height:1.55;color:#d7e2ee;tab-size:2}
   .prompt textarea[hidden]{display:none}
-  .seth{font-size:17px;margin:38px 0 6px;letter-spacing:-.01em}
-  .setp{color:var(--muted);margin:0 0 14px;max-width:640px}
-  ol.steps{margin:0;padding-left:22px;color:var(--muted)}
-  ol.steps li{margin:9px 0}
-  ol.steps b{color:var(--fg)}
-  .ilink{font-family:var(--sans);font-size:1em;color:var(--accent);background:none;border:none;
-    padding:0;cursor:pointer;text-decoration:underline}
-  .ilink:hover{color:var(--fg)}
-  .setp code,ol.steps code{font-family:var(--mono);font-size:.88em;color:var(--fg);
-    background:var(--code);border:1px solid var(--line);border-radius:5px;padding:1px 5px}
   footer{padding:40px 0 80px;color:var(--muted);font-size:14px;display:flex;gap:18px;flex-wrap:wrap}
   a{color:var(--accent);text-decoration:none}
   a:hover{text-decoration:underline}
@@ -110,35 +94,47 @@
     <p class="sub">Claude that works without you. Mention <code>@claude …</code> on a GitHub
       issue and a session in Anthropic's cloud does the work and opens a PR — your laptop
       off, on your Max subscription. Two pieces, set up once.</p>
-    <ol class="flow">
-      <li>You mention <b>@claude …</b> in an issue — its body or a comment.</li>
-      <li>A tiny <b>dispatcher Action</b> you own checks permissions and fires a cloud routine — it does zero Claude work itself.</li>
-      <li>The <b>routine</b> clones the repo, implements the change, runs the tests, and opens a PR.</li>
-      <li>From there, <b>Auto-fix</b> watches the PR and handles review comments and CI on its own.</li>
-    </ol>
-
-    <h3 class="seth">1 · Set up the routine</h3>
-    <p class="setp">One-time, in the web UI — the same for every repo:</p>
-    <ol class="steps">
-      <li>Install the <b>Claude GitHub App</b> on the repo — <a href="https://github.com/apps/claude">github.com/apps/claude</a> (or accept the prompt during setup). Required: it gives the routine git access and receives the PR webhooks Auto-fix runs on.</li>
-      <li>Open <a href="https://claude.ai/code/routines/new">claude.ai/code/routines/new</a> and point the routine at your repo.</li>
-      <li>Paste the routine prompt as its instructions — <button class="ilink" data-copy-src="src-routine">copy it</button>.</li>
-      <li>Choose <b>API</b> as the trigger.</li>
-      <li>Under <b>Behavior</b>, turn on <b>Auto-fix pull requests</b>, then click <b>Create</b>.</li>
-      <li>On creation the API token is generated automatically and shown <b>once</b> — copy it before you move to the routine overview, and save it as a <a href="https://docs.github.com/actions/security-guides/using-secrets-in-github-actions">repository secret</a> (Settings → Secrets and variables → Actions → <b>New repository secret</b>) named <code>CLAUDE_ROUTINE_TOKEN</code>; you can't retrieve it afterward.</li>
-      <li>Copy the trigger's fire URL (this one stays visible) and save it the same way as <code>CLAUDE_ROUTINE_FIRE_URL</code>.</li>
-    </ol>
-
-    <h3 class="seth">2 · Add the dispatcher</h3>
-    <p class="setp">Paste this into Claude Code in your repo — it writes the GitHub Action that
-      detects <code>@claude</code> on an issue and fires your routine, using the two secrets
-      you just created.</p>
+    <div class="cards">
+      <div class="card"><div class="n">01 · mention</div><h3>You mention @claude</h3>
+        <p>Write <code>@claude …</code> in an issue or comment. A tiny dispatcher Action you own checks permissions and fires a cloud routine — it does zero Claude work itself.</p></div>
+      <div class="card"><div class="n">02 · ship</div><h3>A cloud session opens a PR</h3>
+        <p>The routine clones the repo, implements the change, runs the tests, and opens a pull request — your laptop off, on your Max subscription.</p></div>
+      <div class="card"><div class="n">03 · maintain</div><h3>Auto-fix takes over</h3>
+        <p>From there Auto-fix watches the PR and handles review comments and CI on its own — no re-triggering needed.</p></div>
+    </div>
+    <p class="step" style="margin-top:28px"># paste into Claude Code in your repo — it writes the dispatcher Action into
+# .github/, then prints the one-time routine + secrets setup for you to do in the web UI</p>
     <div class="prompt">
       <div class="row">
         <button class="btn" data-copy="pp-claude">Copy prompt</button>
         <button class="btn ghost" data-edit="pp-claude">Edit</button>
       </div>
       <textarea id="pp-claude" data-src="src-claude" spellcheck="false" hidden></textarea>
+    </div>
+  </section>
+
+  <section>
+    <h2>secrets <span class="tag">prompt · keys at runtime</span></h2>
+    <p class="sub">Real secrets in your routine, never in your repo. The cloud environment
+      holds one bootstrap token for your secrets manager; a <code>SessionStart</code> hook in
+      your repo pulls the rest and injects them into the session at runtime — so the agent
+      runs with live API keys and connection strings, and nothing sensitive is ever committed.</p>
+    <div class="cards">
+      <div class="card"><div class="n">01 · store</div><h3>One bootstrap token</h3>
+        <p>Your routine environment holds a single secrets-manager token as an env var. Every other secret stays in the manager — Doppler, Vault, Infisical, 1Password, AWS.</p></div>
+      <div class="card"><div class="n">02 · install</div><h3>CLI in the environment</h3>
+        <p>The environment's setup script installs the manager's CLI, so it's ready before any session starts.</p></div>
+      <div class="card"><div class="n">03 · inject</div><h3>Injected at session start</h3>
+        <p>A <code>SessionStart</code> hook you own runs the CLI and writes the secrets into the session's env file — available to every command, never to disk you commit.</p></div>
+    </div>
+    <p class="step" style="margin-top:28px"># paste into Claude Code in your repo — it asks which secrets manager you use,
+# writes the SessionStart hook into .claude/, then prints the web-UI steps for the environment</p>
+    <div class="prompt">
+      <div class="row">
+        <button class="btn" data-copy="pp-secrets">Copy prompt</button>
+        <button class="btn ghost" data-edit="pp-secrets">Edit</button>
+      </div>
+      <textarea id="pp-secrets" data-src="src-secrets" spellcheck="false" hidden></textarea>
     </div>
   </section>
 
@@ -350,8 +346,8 @@ before writing.
 <script type="text/plain" id="src-claude">
 You are creating the "@claude" dispatcher for THIS repository: a small GitHub Action that
 turns an "@claude ..." mention on an issue into a fired Claude Code cloud routine. Build the
-workflow file only — the one-time routine + secrets setup is a fixed web-UI process the human
-does separately (it's the same for every repo). Use your own judgment on YAML structure, but
+workflow file, then end by printing the one-time routine + secrets setup for me to do in the
+web UI — a fixed process, the same for every repo. Use your own judgment on YAML structure, but
 use any regex I hand you verbatim, since those are the easy-to-get-wrong parts. Pause and ask
 me before doing anything you can't verify.
 
@@ -364,6 +360,20 @@ native triggers for pull_request and release, but NOT issue comments, so this is
 piece that has to listen for the "@claude" mention. (@claude is a real mention because the
 Claude GitHub App is installed — but the App does NOT act on mentions itself, so nothing
 fires unless THIS dispatcher does.)
+
+## First, ask me who may trigger @claude
+
+Before writing the workflow, ask me who is allowed to command the agent — this is the gate
+that stops a stranger from driving it (especially on a public repo). Offer these options and
+wait for my answer:
+
+- (a) Anyone with write access — authors whose association is OWNER, MEMBER, or COLLABORATOR.
+- (b) A specific allowlist of GitHub usernames I give you — only those exact logins.
+- (c) Both — write access AND on the allowlist (the strictest).
+
+If I pick (b) or (c), get the exact usernames from me. Bake my choice into the authorisation
+gate below: put the allowlist as a literal list in the workflow (a job-level env var or an
+inline array is fine) and compare it against the triggering actor's login case-insensitively.
 
 ## Create the dispatcher workflow
 
@@ -388,8 +398,14 @@ Permissions block: issues: write, contents: read.
 
 Guards — ALL must fail closed (keep every post-gate step on default success(); do NOT add an
 always() step that could fire unauthenticated):
-- Write-access gate: only proceed when author_association is OWNER, MEMBER, or COLLABORATOR.
-  Without this, anyone could command the agent on a public repo.
+- Authorisation gate: enforce the policy I chose in the question above, failing closed (an
+  unauthorised actor is ignored silently, never answered):
+    · write access -> proceed only when author_association is OWNER, MEMBER, or COLLABORATOR.
+    · allowlist    -> proceed only when the triggering actor's login is in my exact list. The
+      login is github.event.issue.user.login (issues) or github.event.comment.user.login
+      (issue_comment); compare case-insensitively (lowercase both sides before matching).
+    · both         -> require write access AND allowlist membership.
+  Without this gate, anyone could command the agent on a public repo.
 - Loop guard: ignore items authored by a Bot (the comment's or issue's user.type == 'Bot') —
   this stops the dispatcher's own ack (posted as github-actions[bot]) from re-triggering it.
 - Dedupe: before firing, scan the issue's comments for a prior "🤖 On it" ack carrying a
@@ -427,28 +443,197 @@ URL from the web UI) and CLAUDE_ROUTINE_TOKEN (the per-routine sk-ant-oat01- tok
 Note: the routine-fire API is a research preview under the beta header above; if you can
 check current Anthropic docs for the exact request/response shape, do.
 
-## When you're done
+## When you're done — print the routine setup for me
 
-Confirm the workflow is in place and remind me to complete the one-time routine setup if I
-haven't yet — those are fixed web-UI steps (create the routine, enable Auto-fix, paste the
-routine prompt, generate the token, add the two secrets), the same for every repo. Leave the
-commit to me unless I ask.
+The dispatcher fires a cloud routine and reads two secrets I create in the web UI. You can't
+do those steps through me, so once the workflow is in place, confirm it and then print the
+checklist below VERBATIM — including the routine prompt to paste in step 3. It's the same for
+every repo; don't skip or paraphrase a step. Then leave the commit to me unless I ask.
+
+----- print everything below this line for me -----
+
+Finish setup — do these once, in the web UI:
+
+1. Install the Claude GitHub App on this repo — https://github.com/apps/claude (or accept the
+   prompt during setup). Required: it gives the routine git access and delivers the PR
+   webhooks Auto-fix runs on.
+2. Open https://claude.ai/code/routines/new and point the routine at this repo.
+3. Paste this as the routine's instructions:
+
+   ----- routine prompt -----
+   You are an autonomous coding agent, fired from an "@claude" mention on a GitHub issue. The
+   run input gives you the repo, the issue number, the comment URL, and the request text.
+
+   1. Read the full issue thread with your GitHub tools.
+   2. Determine what is being asked. If it is unclear, ambiguous, or risky, post a comment
+      asking for clarification instead of guessing. (Never write the literal string "@claude"
+      in a comment — it would re-trigger the dispatcher.)
+   3. Implement the change, run the tests, and open a PR. Reference the issue in the PR
+      description with a closing keyword (e.g. "Closes #<issue-number>") — that links the PR
+      to the issue and closes it on merge, so there's no need to post a separate comment.
+
+   Once the PR is open you don't need to be re-triggered for follow-ups: Auto-fix watches the
+   PR and handles CI failures and review comments automatically.
+   ----- end routine prompt -----
+
+4. Choose API as the trigger.
+5. Under Behavior, turn on Auto-fix pull requests, then click Create.
+6. On creation the API token is generated and shown ONCE — copy it before you leave the page
+   and save it as a repository secret named CLAUDE_ROUTINE_TOKEN (Settings → Secrets and
+   variables → Actions → New repository secret). You can't retrieve it afterward.
+7. Copy the trigger's fire URL (this one stays visible) and save it the same way as
+   CLAUDE_ROUTINE_FIRE_URL.
+
+These two secret names must match what the dispatcher workflow reads.
 </script>
 
-<script type="text/plain" id="src-routine">
-You are an autonomous coding agent, fired from an "@claude" mention on a GitHub issue. The
-run input gives you the repo, the issue number, the comment URL, and the request text.
+<script type="text/plain" id="src-secrets">
+You are setting up "secrets" for THIS repository — so a Claude Code cloud routine runs with
+real secrets (API keys, tokens, connection strings) without any of them living in the repo.
+Create the parts that are files I own (project-local, under .claude/), exactly as specified
+below, then print a tailored checklist for the parts only I can do in the web UI. Everything
+you need is in this prompt — do not fetch anything (you may look up a secrets-manager CLI's
+flags if I name one you're unsure about). Pause and ask me before anything you can't verify.
 
-1. Read the full issue thread with your GitHub tools.
-2. Determine what is being asked. If it is unclear, ambiguous, or risky, post a comment
-   asking for clarification instead of guessing. (Never write the literal string "@claude"
-   in a comment — it would re-trigger the dispatcher.)
-3. Implement the change, run the tests, and open a PR. Reference the issue in the PR
-   description with a closing keyword (e.g. "Closes #<issue-number>") — that links the PR to
-   the issue and closes it on merge, so there's no need to post a separate comment on the issue.
+## How it works
 
-Once the PR is open you don't need to be re-triggered for follow-ups: Auto-fix watches the
-PR and handles CI failures and review comments automatically.
+A routine runs in a configured environment. We keep ONE bootstrap credential in that
+environment — a token for a secrets manager (Doppler, HashiCorp Vault, Infisical,
+1Password, AWS Secrets Manager, …) — and install that manager's CLI in the environment's
+setup script. Then a SessionStart hook in THIS repo runs the CLI to fetch the actual
+secrets and appends them as `export KEY=value` lines to the file at $CLAUDE_ENV_FILE, which
+Claude Code sources before every Bash command. Result: the agent sees live secrets at
+runtime, only the bootstrap token is stored in the environment, and nothing sensitive is
+ever committed.
+
+Two halves:
+- What I write now (files in this repo): the SessionStart hook + injection script, the
+  settings.json registration, and — if close-gaps is installed — a skill documenting it.
+- What you do (web UI, I can't click there): point the routine at a custom environment, add
+  the bootstrap token as an env var, and add the CLI install line to its setup script. I'll
+  print this as a tailored checklist at the end.
+
+Do these steps in order.
+
+## Step 0 — ask me
+
+Before writing anything, ask me (and wait for answers — don't guess):
+
+1. Which secrets manager? (Doppler is the worked example below; adapt for any other.)
+2. The name of the bootstrap env var the CLI authenticates with — e.g. DOPPLER_TOKEN,
+   VAULT_TOKEN, INFISICAL_TOKEN. This is the one secret the environment will hold.
+3. The CLI install command (one line, runs in the environment's setup script). Doppler:
+   curl -Ls --tlsv1.2 --proto '=https' --retry 3 https://cli.doppler.com/install.sh | sh
+4. The fetch command that prints the secrets as env lines. Doppler:
+   doppler secrets download --no-file --format env-no-quotes --token "$DOPPLER_TOKEN"
+
+If I'm unsure of (3) or (4) for my manager, check that CLI's docs for the equivalent
+"install" and "export as dotenv/env" commands, propose them, and confirm with me.
+
+## Step 1 — write the injection script (the SessionStart hook)
+
+Create  .claude/hooks/inject-secrets.sh  and make it executable (chmod +x). Here is the
+Doppler version verbatim — substitute the bootstrap env var and the fetch command from my
+answers for any other manager. Keep the two guards and the transform-to-`export`-lines shape;
+they are the easy-to-get-wrong parts.
+
+```bash
+#!/usr/bin/env bash
+# SessionStart hook: fetch secrets from the secrets manager and expose them to the session.
+# Reads the bootstrap token from the environment (set in the routine's environment, never
+# committed) and appends `export KEY=value` lines to $CLAUDE_ENV_FILE, which Claude Code
+# sources before each Bash command. It never prints a secret value and never writes secrets
+# to any file other than $CLAUDE_ENV_FILE.
+set -euo pipefail
+
+# $CLAUDE_ENV_FILE only exists in SessionStart-style hooks. If it's unset, this isn't a
+# session-start context (or the feature is unavailable) — do nothing, quietly.
+[ -n "${CLAUDE_ENV_FILE:-}" ] || exit 0
+
+# Bootstrap token missing (e.g. running locally without it): skip rather than fail the
+# session, so a missing credential never blocks startup.
+[ -n "${DOPPLER_TOKEN:-}" ] || { echo "DOPPLER_TOKEN not set — skipping secret injection" >&2; exit 0; }
+
+# Fetch as env lines, prefix each with `export `, append to the session env file.
+doppler secrets download --no-file --format env-no-quotes --token "$DOPPLER_TOKEN" \
+  | sed 's/^/export /' >> "$CLAUDE_ENV_FILE"
+```
+
+Rules when adapting:
+- Read the bootstrap token from its env var; never hardcode or commit it.
+- Append only to $CLAUDE_ENV_FILE; write secrets nowhere else, and never echo their values.
+- Do NOT add `set -x` / shell tracing — it would leak secret values into the hook log.
+- The fetch output must be `KEY=value` per line before the `sed` prefixes it with `export`;
+  if your manager emits quotes, choose its no-quotes/dotenv format (Doppler: env-no-quotes).
+
+This hook also works locally: if I have the CLI and the token in my local environment, my
+local sessions get the same secrets; if not, the guard above makes it a silent no-op.
+
+## Step 2 — register the SessionStart hook
+
+Edit  .claude/settings.json  to register the hook, MERGING into any existing settings (don't
+clobber other keys or hooks):
+
+    {
+      "hooks": {
+        "SessionStart": [
+          { "hooks": [ { "type": "command",
+                         "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/inject-secrets.sh" } ] }
+        ]
+      }
+    }
+
+No matcher, so it runs on every session start — startup, resume, clear, and compact — and
+secrets are present every time. $CLAUDE_PROJECT_DIR resolves to the project root in hook
+commands. If you're unsure of the exact hook-config shape, verify it against the current
+Claude Code SessionStart hooks reference before writing.
+
+## Step 3 — if close-gaps is installed, document it as a skill
+
+Check whether  .claude/skills/close-gaps/  exists. If it does, this project uses close-gaps,
+so capture the secrets setup as an external-context skill in its convention — create
+.claude/skills/secrets-context/SKILL.md  so future sessions know secrets are injected and how
+to manage them:
+
+```markdown
+---
+name: secrets-context
+description: How runtime secrets reach this project's sessions. Read before assuming a secret is missing, or when adding/rotating one.
+---
+# Secrets
+Secrets are injected at session start by `.claude/hooks/inject-secrets.sh`, which pulls them
+from <manager> and writes `export KEY=value` lines to `$CLAUDE_ENV_FILE`.
+- Auth: the environment holds `<BOOTSTRAP_ENV_VAR>` (the secrets-manager token); the user provides it. No other secret is stored in the repo or the environment.
+- Add / rotate a secret: do it in <manager> (`<cli> ...`) — it appears in the next session automatically; no repo change needed.
+- Available secrets: <list the keys, or how to list them, e.g. `<cli> secrets`>.
+```
+
+Fill the angle-bracket parts from my answers in Step 0. If close-gaps is NOT installed, skip
+this step (mention it exists and I can add it later).
+
+## Step 4 — print the web-UI checklist
+
+I can't configure the routine environment for you — print these steps, filled in with my
+answers, so I can do them in claude.ai/code:
+
+1. Edit the routine → Environment. Replace the default environment with a new (custom)
+   environment, so installs and env vars persist across runs.
+2. Add an environment variable: `<BOOTSTRAP_ENV_VAR>` = <my token> (e.g. DOPPLER_TOKEN). This
+   is the only secret stored in the environment.
+3. In the environment's setup / bootstrap script, add the CLI install line: <install command>
+   (e.g. the Doppler curl install above).
+4. Save the environment.
+
+On the next run: the setup script installs the CLI, the env var authenticates it, and this
+repo's SessionStart hook injects every secret into the session.
+
+## Step 5 — confirm and hand off
+
+- Show me the files you created and the settings.json change.
+- Reprint the Step 4 checklist as my to-do list, and confirm no token was written to any file.
+- Remind me these files are mine to tune and safe to commit (the hook + script + skill live
+  under .claude/) — but a real secret never goes in the repo; only the bootstrap token, only
+  in the routine environment.
 </script>
 
 <script>
@@ -474,17 +659,6 @@ PR and handles CI failures and review comments automatically.
       const ta = document.getElementById(btn.dataset.edit);
       ta.hidden = !ta.hidden;
       btn.textContent = ta.hidden ? "Edit" : "Hide";
-    });
-  });
-
-  // Inline copy: copies a source block's text directly, no textarea, no edit.
-  document.querySelectorAll("button[data-copy-src]").forEach(btn => {
-    btn.addEventListener("click", async () => {
-      const src = document.getElementById(btn.dataset.copySrc), label = btn.textContent;
-      const text = src.textContent.replace(/^\n/, "").replace(/\s+$/, "");
-      try { await navigator.clipboard.writeText(text); btn.textContent = "copied ✓"; }
-      catch (e) { btn.textContent = "copy failed"; }
-      setTimeout(() => { btn.textContent = label; }, 2000);
     });
   });
 </script>
